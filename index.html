@@ -178,8 +178,17 @@
             <li>1 campanha ativa</li>
             <li>Relatório mensal</li>
           </ul>
-          <a class="btn block" href="#contato">Quero começar</a>
+          <!-- Botão com redirecionamento dinâmico para WhatsApp -->
+          <a class="btn block wa-plan"
+             href="#"
+             data-plan="Essencial"
+             data-impl="R$ 997"
+             data-monthly="R$ 497/mês"
+             target="_blank" rel="noopener">
+            Quero começar
+          </a>
         </div>
+
         <div class="card plan featured">
           <h3>Profissional</h3>
           <p class="price">Implementação: <strong>R$ 1.497</strong></p>
@@ -189,8 +198,16 @@
             <li>3 campanhas ativas</li>
             <li>Revisões semanais</li>
           </ul>
-          <a class="btn block primary" href="#contato">Plano recomendado</a>
+          <a class="btn block primary wa-plan"
+             href="#"
+             data-plan="Profissional"
+             data-impl="R$ 1.497"
+             data-monthly="R$ 797/mês"
+             target="_blank" rel="noopener">
+            Plano recomendado
+          </a>
         </div>
+
         <div class="card plan">
           <h3>Avançado</h3>
           <p class="price">Implementação: <strong>R$ 2.127</strong></p>
@@ -200,7 +217,14 @@
             <li>Até 5 campanhas ativas</li>
             <li>Otimização quase diária</li>
           </ul>
-          <a class="btn block" href="#contato">Agendar diagnóstico</a>
+          <a class="btn block wa-plan"
+             href="#"
+             data-plan="Avançado"
+             data-impl="R$ 2.127"
+             data-monthly="R$ 1.297/mês"
+             target="_blank" rel="noopener">
+            Agendar diagnóstico
+          </a>
         </div>
       </div>
       <p class="disclaimer">* Investimento em mídia é pago à parte. Implementação: configuração completa da IA, funis, integrações e 1ª campanha.</p>
@@ -235,5 +259,37 @@
   <footer class="container footer">
     <p>© 2025 Tech Labz — Tech AI</p>
   </footer>
+
+  <!-- Script: redireciona os botões de plano para o WhatsApp com mensagem pronta -->
+  <script>
+    const WHATSAPP_NUMBER = "5537988416977"; // seu número
+
+    function buildWaLink(plan, impl, monthly) {
+      const msg =
+        `Olá! Tenho interesse no plano ${plan} da Tech Labz (Tech AI).` +
+        `\nValores: Implementação ${impl} | Mensalidade ${monthly}.` +
+        `\nPodemos seguir com a contratação?`;
+      return `https://wa.me/${WHATSAPP_NUMBER}?text=` + encodeURIComponent(msg);
+    }
+
+    document.querySelectorAll('.wa-plan').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const plan = btn.getAttribute('data-plan');
+        const impl = btn.getAttribute('data-impl');
+        const monthly = btn.getAttribute('data-monthly');
+        const url = buildWaLink(plan, impl, monthly);
+        window.open(url, '_blank', 'noopener');
+      });
+    });
+
+    // (Opcional) Ajusta CTA geral da seção de contato com mensagem padrão
+    const contactCTA = document.querySelector('#contato a.btn.primary');
+    if (contactCTA) {
+      const defaultMsg =
+        "Olá! Quero automatizar meu marketing com a Tech AI. Pode me ajudar a escolher o melhor plano?";
+      contactCTA.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(defaultMsg)}`;
+    }
+  </script>
 </body>
 </html>
