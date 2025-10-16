@@ -384,20 +384,20 @@ const personas = {
         "Ela reduz faltas em até 40% e libera sua equipe do WhatsApp o dia todo."
       ],
       [
-        "Ela também consegue identificar novos pacientes e oferecer pacotes de tratamentos de forma natural.",
+        "Ela também identifica novos pacientes e oferece pacotes de tratamentos de forma natural.",
         "Tudo isso enquanto você foca em atender melhor quem está na clínica."
       ]
     ]
   },
   "Academia": {
-    estilo: "motivador e energético",
+    estilo: "energético e motivador",
     respostas: [
       [
         "Perfeito! 💪 Nossa IA capta alunos todos os dias, envia planos e horários automaticamente.",
-        "Ela até reativa contatos antigos e incentiva renovações com mensagens personalizadas."
+        "Ela reativa contatos antigos e incentiva renovações com mensagens personalizadas."
       ],
       [
-        "Em academias, o retorno costuma ser rápido — mais alunos e menos tempo no celular!",
+        "Em academias, o retorno é rápido — mais alunos e menos tempo no celular!",
         "Você foca nos treinos, ela foca nas conversões."
       ]
     ]
@@ -432,8 +432,8 @@ const personas = {
     estilo: "neutro e adaptável",
     respostas: [
       [
-        "Interessante! 🚀 Nossa IA é flexível e se adapta a qualquer negócio que dependa de atendimento e captação de clientes.",
-        "Basta entendermos seu fluxo e ajustamos o comportamento da IA pra seu modelo."
+        "Interessante! 🚀 Nossa IA se adapta a qualquer negócio que dependa de atendimento e captação de clientes.",
+        "Basta entendermos seu fluxo e ajustamos o comportamento da IA pro seu modelo."
       ],
       [
         "Ela pode atender, vender, reter ou até coletar dados pra equipe comercial.",
@@ -444,15 +444,36 @@ const personas = {
 };
 
 // ======== FUNÇÕES AUXILIARES ========
-function appendMsg(role, text) {
+
+// animação de digitação letra por letra
+function typeText(element, text, speed = 25) {
+  return new Promise((resolve) => {
+    let i = 0;
+    const timer = setInterval(() => {
+      element.innerHTML = text.slice(0, i++) + "<span class='cursor'>▋</span>";
+      if (i > text.length) {
+        clearInterval(timer);
+        element.innerHTML = text;
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+function appendMsg(role, text, instant = false) {
   const div = document.createElement("div");
   div.className = "msg " + role;
   const bubble = document.createElement("div");
   bubble.className = "bubble";
-  bubble.innerHTML = text;
   div.appendChild(bubble);
   document.getElementById("chat-stream").appendChild(div);
   document.getElementById("chat-stream").scrollTop = 999999;
+  if (instant) {
+    bubble.innerHTML = text;
+    return Promise.resolve();
+  } else {
+    return typeText(bubble, text);
+  }
 }
 
 function typing(on = true) {
@@ -471,86 +492,68 @@ function typing(on = true) {
   } else if (!on && t) t.remove();
 }
 
-function speak(text) {
-  if (!window.speechSynthesis) return;
-  const voices = speechSynthesis.getVoices();
-  const female = voices.find(v => /female|woman|mulher|brazil|pt-BR/i.test(v.name)) || voices[0];
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.voice = female;
-  utter.rate = 1.05;
-  utter.pitch = 1.1;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
-}
-
 // ======== CONVERSA ========
 function nextStep2(segment) {
   document.getElementById("step-1").remove();
-  appendMsg("you", segment);
+  appendMsg("you", segment, true);
   typing(true);
 
   setTimeout(() => {
     typing(false);
-    appendMsg("bot", "Perfeito! Qual é o seu principal objetivo com a automação?");
-    const actions = document.createElement("div");
-    actions.className = "actions";
-    ["Mais agendamentos", "Vender pacotes", "Baixar custo por lead", "Reativar clientes"].forEach(opt => {
-      const p = document.createElement("span");
-      p.className = "pill";
-      p.textContent = opt;
-      p.onclick = () => nextStep3(segment, opt);
-      actions.appendChild(p);
+    appendMsg("bot", "Perfeito! Qual é o seu principal objetivo com a automação?", true).then(() => {
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      ["Mais agendamentos", "Vender pacotes", "Baixar custo por lead", "Reativar clientes"].forEach(opt => {
+        const p = document.createElement("span");
+        p.className = "pill";
+        p.textContent = opt;
+        p.onclick = () => nextStep3(segment, opt);
+        actions.appendChild(p);
+      });
+      document.getElementById("chat-stream").appendChild(actions);
     });
-    document.getElementById("chat-stream").appendChild(actions);
-  }, 1000);
+  }, 900);
 }
 
-function nextStep3(segment, objetivo) {
-  appendMsg("you", objetivo);
+async function nextStep3(segment, objetivo) {
+  appendMsg("you", objetivo, true);
   typing(true);
 
-  setTimeout(() => {
+  setTimeout(async () => {
     typing(false);
     const info = personas[segment] || personas["Outro"];
     const grupo = info.respostas[Math.floor(Math.random() * info.respostas.length)];
 
-    // Simula digitação em partes
-    appendMsg("bot", grupo[0]);
-    speak(grupo[0]);
+    await appendMsg("bot", grupo[0]);
+    typing(true);
+    await new Promise(r => setTimeout(r, 700));
+    typing(false);
+    await appendMsg("bot", grupo[1]);
 
-    setTimeout(() => {
-      typing(true);
-      setTimeout(() => {
-        typing(false);
-        appendMsg("bot", grupo[1]);
-        speak(grupo[1]);
+    await new Promise(r => setTimeout(r, 800));
+    appendMsg("bot", "Quer que eu envie uma proposta personalizada via WhatsApp?", true).then(() => {
+      const actions = document.createElement("div");
+      actions.className = "actions";
 
-        setTimeout(() => {
-          appendMsg("bot", "Quer que eu envie uma proposta personalizada via WhatsApp?");
-          const actions = document.createElement("div");
-          actions.className = "actions";
+      const go = document.createElement("span");
+      go.className = "pill";
+      go.textContent = "Sim, quero proposta";
+      go.onclick = () => {
+        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=` +
+          encodeURIComponent(`Olá! Sou do segmento ${segment}. Meu foco é ${objetivo}. Quero uma proposta personalizada da Tech AI.`);
+        window.open(url, "_blank");
+      };
 
-          const go = document.createElement("span");
-          go.className = "pill";
-          go.textContent = "Sim, quero proposta";
-          go.onclick = () => {
-            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=` +
-              encodeURIComponent(`Olá! Sou do segmento ${segment}. Meu foco é ${objetivo}. Quero uma proposta personalizada da Tech AI.`);
-            window.open(url, "_blank");
-          };
+      const later = document.createElement("span");
+      later.className = "pill";
+      later.textContent = "Ver planos primeiro";
+      later.onclick = () => document.getElementById("planos").scrollIntoView({ behavior: "smooth" });
 
-          const later = document.createElement("span");
-          later.className = "pill";
-          later.textContent = "Ver planos primeiro";
-          later.onclick = () => document.getElementById("planos").scrollIntoView({ behavior: "smooth" });
-
-          actions.appendChild(go);
-          actions.appendChild(later);
-          document.getElementById("chat-stream").appendChild(actions);
-        }, 1800);
-      }, 1400);
-    }, 1300);
-  }, 900);
+      actions.appendChild(go);
+      actions.appendChild(later);
+      document.getElementById("chat-stream").appendChild(actions);
+    });
+  }, 1000);
 }
 
 // ======== INICIALIZAÇÃO ========
@@ -558,5 +561,18 @@ document.querySelectorAll("#step-1 .pill").forEach(p => {
   p.onclick = () => nextStep2(p.dataset.val);
 });
 </script>
+
+<style>
+/* animação de digitação */
+.cursor {
+  display: inline-block;
+  color: var(--brand);
+  animation: blink 0.8s infinite;
+}
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+</style>
 </body>
 </html>
