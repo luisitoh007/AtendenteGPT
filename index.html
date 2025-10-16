@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -360,83 +360,139 @@
     });
 
     /* Demo Chat */
-    const stream = document.getElementById('chat-stream');
+    const personas = {
+    "Clínica": {
+      estilo: "profissional e acolhedor",
+      respostas: [
+        "Excelente! Para clínicas, nossa IA ajuda a captar pacientes todos os dias, respondendo dúvidas sobre tratamentos, horários e promoções.",
+        "Ela também envia lembretes automáticos e reduz as faltas em até 40%.",
+      ]
+    },
+    "Academia": {
+      estilo: "energético e direto",
+      respostas: [
+        "Perfeito! Em academias e studios, a IA converte curiosos em alunos, enviando planos, horários e ofertas no WhatsApp.",
+        "Ela ativa contatos antigos e incentiva renovações automáticas. 💪"
+      ]
+    },
+    "Barbearia": {
+      estilo: "descontraído e confiante",
+      respostas: [
+        "Show de bola! Nas barbearias, a IA agenda clientes automaticamente e confirma o horário — tudo sem precisar parar pra responder mensagens.",
+        "Você foca nos cortes enquanto ela cuida do WhatsApp. ✂️"
+      ]
+    },
+    "Loja de Roupas": {
+      estilo: "comercial e envolvente",
+      respostas: [
+        "Legal! Em lojas, a IA responde clientes 24h, mostra catálogos, envia combos e linka direto com o vendedor.",
+        "Ajuda muito no pós-venda e no WhatsApp Business."
+      ]
+    },
+    "Outro": {
+      estilo: "neutro e adaptável",
+      respostas: [
+        "Interessante! Nossa IA é flexível e pode se adaptar a qualquer tipo de negócio que dependa de clientes e mensagens.",
+        "Basta entendermos o fluxo ideal pra personalizar tudo pra você."
+      ]
+    }
+  };
 
-    function appendMsg(role, text){
-      const div = document.createElement('div');
-      div.className = 'msg ' + role;
-      const bub = document.createElement('div');
-      bub.className = 'bubble';
-      bub.textContent = text;
-      div.appendChild(bub);
-      stream.appendChild(div);
-      stream.scrollTop = stream.scrollHeight;
-    }
-    function typing(on=true){
-      let t = document.getElementById('typing');
-      if(on && !t){
-        t = document.createElement('div');
-        t.id = 'typing';
-        t.className = 'msg bot';
-        const b = document.createElement('div');
-        b.className = 'bubble';
-        const dots = document.createElement('div');
-        dots.className = 'typing';
-        b.appendChild(dots);
-        t.appendChild(b);
-        stream.appendChild(t);
-      } else if(!on && t){
-        t.remove();
-      }
-    }
-    function nextStep2(segment){
-      appendMsg('you', segment);
-      typing(true);
-      setTimeout(()=>{
-        typing(false);
-        appendMsg('bot', `Perfeito! E qual é o seu objetivo principal?`);
-        const actions = document.createElement('div');
-        actions.className = 'actions';
-        ['Mais agendamentos','Vender pacotes','Baixar CPL','Reativar clientes'].forEach(opt=>{
-          const p = document.createElement('span'); p.className='pill'; p.textContent=opt;
-          p.onclick = ()=> nextStep3(segment, opt);
-          actions.appendChild(p);
-        });
-        stream.appendChild(actions);
-        stream.scrollTop = stream.scrollHeight;
-      }, 700);
-    }
-    function nextStep3(segment, goal){
-      appendMsg('you', goal);
-      typing(true);
-      setTimeout(()=>{
-        typing(false);
-        appendMsg('bot', `Show! Com ${segment} focado em "${goal}", a Tech AI configura captação + qualificação + lembretes automáticos.`);
-        appendMsg('bot', `Quer receber uma proposta personalizada? Posso te encaminhar pro WhatsApp agora.`);
-        const actions = document.createElement('div');
-        actions.className = 'actions';
-        const go = document.createElement('span'); go.className='pill'; go.textContent='Sim, enviar no WhatsApp';
-        const later = document.createElement('span'); later.className='pill'; later.textContent='Ver planos primeiro';
-        go.onclick = ()=>{
-          const url = `https://wa.me/${WHATSAPP_NUMBER}?text=` + encodeURIComponent(
-            `Olá! Sou ${segment}. Meu objetivo é: ${goal}. Quero proposta personalizada da Tech AI.`
-          );
-          window.open(url,'_blank','noopener');
+  // ==== FUNÇÕES AUXILIARES ====
+  function appendMsg(role, text) {
+    const div = document.createElement("div");
+    div.className = "msg " + role;
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.innerHTML = text;
+    div.appendChild(bubble);
+    document.getElementById("chat-stream").appendChild(div);
+    document.getElementById("chat-stream").scrollTop = 999999;
+  }
+
+  function typing(on = true) {
+    let t = document.getElementById("typing");
+    if (on && !t) {
+      t = document.createElement("div");
+      t.id = "typing";
+      t.className = "msg bot";
+      const b = document.createElement("div");
+      b.className = "bubble";
+      const dots = document.createElement("div");
+      dots.className = "typing";
+      b.appendChild(dots);
+      t.appendChild(b);
+      document.getElementById("chat-stream").appendChild(t);
+    } else if (!on && t) t.remove();
+  }
+
+  // ==== FLUXO DA CONVERSA ====
+  function nextStep2(segment) {
+    document.getElementById("step-1").remove();
+    appendMsg("you", segment);
+    typing(true);
+
+    setTimeout(() => {
+      typing(false);
+      appendMsg("bot", "Perfeito! Qual é o seu principal objetivo com a automação?");
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      ["Mais agendamentos", "Vender pacotes", "Baixar custo por lead", "Reativar clientes"].forEach(opt => {
+        const p = document.createElement("span");
+        p.className = "pill";
+        p.textContent = opt;
+        p.onclick = () => nextStep3(segment, opt);
+        actions.appendChild(p);
+      });
+      document.getElementById("chat-stream").appendChild(actions);
+    }, 900);
+  }
+
+  function nextStep3(segment, objetivo) {
+    appendMsg("you", objetivo);
+    typing(true);
+
+    setTimeout(() => {
+      typing(false);
+      const info = personas[segment] || personas["Outro"];
+      // IA gera resposta contextual baseada no segmento e objetivo
+      const resposta1 = `${info.respostas[0]} <br><br><em>Nosso foco será: ${objetivo.toLowerCase()} — com tom ${info.estilo}.</em>`;
+      const resposta2 = info.respostas[1];
+
+      appendMsg("bot", resposta1);
+      appendMsg("bot", resposta2);
+
+      // Encaminhar ou explorar planos
+      setTimeout(() => {
+        appendMsg("bot", "Quer que eu envie uma proposta personalizada via WhatsApp?");
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const go = document.createElement("span");
+        go.className = "pill";
+        go.textContent = "Sim, quero proposta";
+        go.onclick = () => {
+          const url = `https://wa.me/${WHATSAPP_NUMBER}?text=` +
+            encodeURIComponent(`Olá! Sou do segmento ${segment}. Meu foco é ${objetivo}. Quero uma proposta personalizada da Tech AI.`);
+          window.open(url, "_blank");
         };
-        later.onclick = ()=> document.getElementById('planos').scrollIntoView({behavior:'smooth'});
-        actions.appendChild(go); actions.appendChild(later);
-        stream.appendChild(actions);
-        stream.scrollTop = stream.scrollHeight;
-      }, 900);
-    }
 
-    // bind first step options
-    document.querySelectorAll('#step-1 .pill').forEach(p=>{
-      p.onclick = ()=> {
-        document.getElementById('step-1').remove();
-        nextStep2(p.dataset.val);
-      };
-    });
-  </script>
+        const later = document.createElement("span");
+        later.className = "pill";
+        later.textContent = "Ver planos primeiro";
+        later.onclick = () => document.getElementById("planos").scrollIntoView({ behavior: "smooth" });
+
+        actions.appendChild(go);
+        actions.appendChild(later);
+        document.getElementById("chat-stream").appendChild(actions);
+      }, 1000);
+    }, 1000);
+  }
+
+  // ==== VÍNCULOS DE EVENTO INICIAIS ====
+  document.querySelectorAll("#step-1 .pill").forEach(p => {
+    p.onclick = () => nextStep2(p.dataset.val);
+  });
+</script>
 </body>
 </html>
