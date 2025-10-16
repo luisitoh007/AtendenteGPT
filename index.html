@@ -18,11 +18,11 @@
       --brand-strong:#29bcd9;
       --card:#151823;
       --line:#23283a;
+      --ok:#90f2d8;
+      --accent:#8aa4ff;
     }
     html,body{
-      margin:0; padding:0;
-      background:var(--bg);
-      color:var(--text);
+      margin:0; padding:0; background:var(--bg); color:var(--text);
       font-family: "Inter", ui-sans-serif, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       scroll-behavior:smooth;
     }
@@ -48,6 +48,8 @@
     .btn.primary:hover{transform:translateY(-1px); box-shadow:0 8px 20px rgba(107,227,255,.15);}
     .btn.ghost:hover{background:#0f1422;}
     .btn.block{text-align:center; display:block;}
+    .btn.outline{background:transparent; border:1px solid var(--line);}
+    .btn.outline:hover{background:#0f1422;}
     .trust{display:flex; gap:10px; justify-content:center; color:var(--muted); font-size:14px; flex-wrap:wrap;}
 
     /* ====== Layout ====== */
@@ -58,7 +60,7 @@
     /* ====== Cards & Sections ====== */
     .card{background:linear-gradient(180deg,#141927 0%, #0f1320 100%); border:1px solid var(--line); border-radius:18px; padding:20px; transition:all .3s ease;}
     .card:hover{transform:translateY(-3px); box-shadow:0 10px 25px rgba(107,227,255,.08);}
-    .how h2, .features h2, .plans h2, .faq h2{text-align:center; margin-bottom:18px;}
+    .how h2, .features h2, .plans h2, .faq h2, .demo h2, .flow h2, .segments h2{text-align:center; margin-bottom:18px;}
     .fullband{background:var(--bg-soft); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
     .bullets{list-style:none; padding:0; margin:0; display:grid; gap:8px;}
     .bullets li{position:relative; padding:10px 12px 10px 28px; border-radius:10px; border:1px solid var(--line); background:#0f1524;}
@@ -66,10 +68,22 @@
     .note{background:#101828;}
     .disclaimer{color:var(--muted); text-align:center; margin-top:12px;}
 
+    /* ====== Timeline (Como a IA trabalha) ====== */
+    .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
+    .step{background:#0f1524; border:1px dashed #26304b; padding:14px; border-radius:12px; position:relative;}
+    .step .num{width:28px; height:28px; border-radius:50%; background:linear-gradient(90deg,#29bcd9,#6be3ff); color:#00131a;
+      display:flex; align-items:center; justify-content:center; font-weight:800; position:absolute; top:-14px; left:-14px; border:2px solid #0b0f1c;}
+    .step h4{margin:8px 0 6px;}
+    @media (max-width:860px){ .steps{grid-template-columns:1fr;} }
+
+    /* ====== Segments ====== */
+    .chip{display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); padding:10px 12px; border-radius:12px; background:#0f1524; color:var(--text);}
+    .chip::before{content:"◆"; color:var(--accent);}
+
     /* ====== Plans ====== */
     .plan{display:flex; flex-direction:column; gap:14px; position:relative; overflow:hidden;}
     .plan::before{
-      content:"✨ Plano Personalizável";
+      content:"Ver em detalhes na proposta";
       position:absolute; top:0; left:0; width:100%;
       background:linear-gradient(90deg,#29bcd9 0%,#6be3ff 100%);
       color:#00131a; font-weight:700; font-size:13px; text-align:center;
@@ -78,13 +92,22 @@
     .plan h3{margin-top:32px; text-align:center; font-size:22px;}
     .plan.featured{outline:2px solid var(--brand); box-shadow:0 0 24px rgba(107,227,255,.08);}
     .cta-row{display:flex; gap:10px;}
-    .btn.outline{background:transparent; border:1px solid var(--line);}
-    .btn.outline:hover{background:#0f1422;}
 
-    /* ====== FAQ & Footer ====== */
-    .faq details{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin:10px 0;}
-    .contact{text-align:center; padding:28px 0;}
-    .footer{text-align:center; color:var(--muted);}
+    /* ====== Demo Chat ====== */
+    .chat{background:#0e1220; border:1px solid #1f2742; border-radius:16px; padding:16px; max-width:680px; margin:0 auto;}
+    .chat-header{display:flex; align-items:center; gap:10px; border-bottom:1px solid #1f2742; padding-bottom:10px; margin-bottom:12px;}
+    .dot{width:8px; height:8px; border-radius:50%; background:#61fa9e;}
+    .msg{display:flex; gap:10px; margin:10px 0;}
+    .msg .bubble{padding:10px 12px; border-radius:12px; max-width:80%; line-height:1.4;}
+    .bot .bubble{background:#101a31; border:1px solid #233055;}
+    .you .bubble{background:#1b233a; border:1px solid #2a3a6a;}
+    .actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;}
+    .pill{padding:8px 12px; border-radius:999px; border:1px solid #2a3a6a; background:#0f162b; cursor:pointer; transition:all .2s;}
+    .pill:hover{background:#152041;}
+    .typing{width:48px; height:14px; background:linear-gradient(90deg, #2a3a6a 0%, #5275ff 50%, #2a3a6a 100%);
+      background-size:200% 100%; border-radius:8px; animation:flow 1.2s infinite linear;}
+    @keyframes flow{ 0%{background-position:0% 0;} 100%{background-position:200% 0;} }
+    .tiny{color:var(--muted); font-size:12px; margin-top:8px; text-align:center;}
   </style>
 </head>
 <body>
@@ -105,7 +128,7 @@
       <p>Configuramos inteligências autônomas para captar, qualificar e agendar clientes — enquanto seu Instagram e seus anúncios trabalham 24/7.</p>
       <div class="hero-ctas">
         <a class="btn primary" href="#como-funciona">Como funciona</a>
-        <a class="btn ghost" href="#planos">Ver planos</a>
+        <a class="btn ghost" href="#demo">Ver em ação</a>
       </div>
       <div class="trust">
         <span>Soluções de automação para empresas de qualquer segmento</span>
@@ -124,6 +147,50 @@
         <div class="card"><h3>1) IA de Atendimento</h3><p>Assistente treinado responde WhatsApp/Instagram, coleta dados, remove objeções e <strong>agenda</strong> direto no seu fluxo.</p></div>
         <div class="card"><h3>2) Tráfego Pago</h3><p>Campanhas em Meta/TikTok com criativos orientados por dados e <strong>otimização contínua</strong>.</p></div>
         <div class="card"><h3>3) Conteúdo que Converte</h3><p>Roteiros, Reels e Stories com calendário editorial e <strong>call-to-action</strong> direto para WhatsApp.</p></div>
+      </div>
+    </section>
+
+    <!-- ====== DEMO (mini chat IA) ====== -->
+    <section id="demo" class="container demo">
+      <h2>Veja a Tech AI em ação</h2>
+      <div class="chat card">
+        <div class="chat-header">
+          <div class="dot"></div>
+          <strong>Assistente Tech AI</strong>
+          <span class="muted" style="margin-left:auto;font-size:12px;">demo interativa</span>
+        </div>
+        <div id="chat-stream">
+          <div class="msg bot"><div class="bubble">Olá 👋 Sou a Tech AI. Pra personalizar sua proposta, me conta:<br>qual é o seu segmento?</div></div>
+          <div class="actions" id="step-1">
+            <span class="pill" data-val="Clínica">Clínica</span>
+            <span class="pill" data-val="Academia">Academia</span>
+            <span class="pill" data-val="Barbearia">Barbearia</span>
+            <span class="pill" data-val="Loja de Roupas">Loja de Roupas</span>
+            <span class="pill" data-val="Outro">Outro</span>
+          </div>
+        </div>
+        <div class="tiny">Exemplo: conversa inicial automatizada; ao final, a IA encaminha pro WhatsApp com os dados.</div>
+      </div>
+    </section>
+
+    <!-- ====== COMO A IA TRABALHA ====== -->
+    <section class="container flow">
+      <h2>Como a IA trabalha por você</h2>
+      <div class="steps">
+        <div class="step"><div class="num">1</div><h4>Capta</h4><p>Conecta com seus anúncios e capta leads 24/7.</p></div>
+        <div class="step"><div class="num">2</div><h4>Qualifica</h4><p>Faz perguntas-chave e separa curiosos de compradores.</p></div>
+        <div class="step"><div class="num">3</div><h4>Agenda</h4><p>Oferece horários, confirma presença e envia lembretes.</p></div>
+        <div class="step"><div class="num">4</div><h4>Relata</h4><p>Gera relatórios com CPL, taxa de agendamento e ROI.</p></div>
+      </div>
+    </section>
+
+    <!-- ====== SEGMENTOS ====== -->
+    <section class="container segments">
+      <h2>Funciona para diversos segmentos</h2>
+      <div class="grid3">
+        <div class="card"><div class="chip">Clínicas e Estúdios</div><p class="muted" style="margin-top:8px;">Estética, odontologia, terapias, depilação.</p></div>
+        <div class="card"><div class="chip">Academias e Fitness</div><p class="muted" style="margin-top:8px;">Pilates, box de cross, personal.</p></div>
+        <div class="card"><div class="chip">Varejo e Serviços</div><p class="muted" style="margin-top:8px;">Moda, barbearias, oficinas, educação.</p></div>
       </div>
     </section>
 
@@ -184,6 +251,7 @@
       <p class="disclaimer">* Investimento em mídia é pago à parte. Os planos são personalizáveis: ajustamos escopo, volume e integrações de acordo com o seu negócio.</p>
     </section>
 
+    <!-- ====== FAQ ====== -->
     <section id="faq" class="container faq">
       <h2>Perguntas frequentes</h2>
       <details><summary>Vocês configuram tudo do zero?</summary><p>Sim. Implementamos a IA, preparamos criativos e configuramos campanhas, pixels e eventos para começar a rodar imediatamente.</p></details>
@@ -191,6 +259,7 @@
       <details><summary>Existe fidelidade?</summary><p>Não exigimos fidelidade. Nosso objetivo é manter você pelos resultados.</p></details>
     </section>
 
+    <!-- ====== CONTATO ====== -->
     <section id="contato" class="fullband contact">
       <div class="container contact-inner">
         <h2>Pronto para automatizar seu marketing?</h2>
@@ -204,19 +273,101 @@
     <p>© 2025 Tech Labz — Tech AI</p>
   </footer>
 
-  <!-- Script WhatsApp -->
+  <!-- ====== Scripts ====== -->
   <script>
+    /* WhatsApp CTA (planos) */
     const WHATSAPP_NUMBER = "5537988416977";
     function buildWaLink(plan){
-      const msg=`Olá! Tenho interesse no plano ${plan} da Tech Labz (Tech AI). Quero uma proposta personalizada para o meu negócio.\nSegmento: ______ | Cidade: ______ | Objetivo principal: ______`;
+      const msg = `Olá! Tenho interesse no plano ${plan} da Tech Labz (Tech AI). ` +
+                  `Quero uma proposta personalizada para o meu negócio.\n` +
+                  `Segmento: ______ | Cidade: ______ | Objetivo principal: ______`;
       return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
     }
     document.querySelectorAll('.wa-plan').forEach(btn=>{
       btn.addEventListener('click',e=>{
         e.preventDefault();
-        const plan=btn.getAttribute('data-plan');
+        const plan = btn.getAttribute('data-plan');
         window.open(buildWaLink(plan),'_blank','noopener');
       });
+    });
+
+    /* Demo Chat */
+    const stream = document.getElementById('chat-stream');
+
+    function appendMsg(role, text){
+      const div = document.createElement('div');
+      div.className = 'msg ' + role;
+      const bub = document.createElement('div');
+      bub.className = 'bubble';
+      bub.textContent = text;
+      div.appendChild(bub);
+      stream.appendChild(div);
+      stream.scrollTop = stream.scrollHeight;
+    }
+    function typing(on=true){
+      let t = document.getElementById('typing');
+      if(on && !t){
+        t = document.createElement('div');
+        t.id = 'typing';
+        t.className = 'msg bot';
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        const dots = document.createElement('div');
+        dots.className = 'typing';
+        b.appendChild(dots);
+        t.appendChild(b);
+        stream.appendChild(t);
+      } else if(!on && t){
+        t.remove();
+      }
+    }
+    function nextStep2(segment){
+      appendMsg('you', segment);
+      typing(true);
+      setTimeout(()=>{
+        typing(false);
+        appendMsg('bot', `Perfeito! E qual é o seu objetivo principal?`);
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        ['Mais agendamentos','Vender pacotes','Baixar CPL','Reativar clientes'].forEach(opt=>{
+          const p = document.createElement('span'); p.className='pill'; p.textContent=opt;
+          p.onclick = ()=> nextStep3(segment, opt);
+          actions.appendChild(p);
+        });
+        stream.appendChild(actions);
+        stream.scrollTop = stream.scrollHeight;
+      }, 700);
+    }
+    function nextStep3(segment, goal){
+      appendMsg('you', goal);
+      typing(true);
+      setTimeout(()=>{
+        typing(false);
+        appendMsg('bot', `Show! Com ${segment} focado em "${goal}", a Tech AI configura captação + qualificação + lembretes automáticos.`);
+        appendMsg('bot', `Quer receber uma proposta personalizada? Posso te encaminhar pro WhatsApp agora.`);
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        const go = document.createElement('span'); go.className='pill'; go.textContent='Sim, enviar no WhatsApp';
+        const later = document.createElement('span'); later.className='pill'; later.textContent='Ver planos primeiro';
+        go.onclick = ()=>{
+          const url = `https://wa.me/${WHATSAPP_NUMBER}?text=` + encodeURIComponent(
+            `Olá! Sou ${segment}. Meu objetivo é: ${goal}. Quero proposta personalizada da Tech AI.`
+          );
+          window.open(url,'_blank','noopener');
+        };
+        later.onclick = ()=> document.getElementById('planos').scrollIntoView({behavior:'smooth'});
+        actions.appendChild(go); actions.appendChild(later);
+        stream.appendChild(actions);
+        stream.scrollTop = stream.scrollHeight;
+      }, 900);
+    }
+
+    // bind first step options
+    document.querySelectorAll('#step-1 .pill').forEach(p=>{
+      p.onclick = ()=> {
+        document.getElementById('step-1').remove();
+        nextStep2(p.dataset.val);
+      };
     });
   </script>
 </body>
