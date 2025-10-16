@@ -183,16 +183,85 @@
         <div class="step"><div class="num">4</div><h4>Relata</h4><p>Gera relatórios com CPL, taxa de agendamento e ROI.</p></div>
       </div>
     </section>
+    <!-- ====== SEGMENTOS (agora com frase ampla) ====== -->
+<section class="container segments">
+  <h2>Funciona para qualquer tipo de negócio</h2>
+  <p style="text-align:center; color:var(--muted); max-width:700px; margin:0 auto 22px;">
+    Seja uma clínica, academia, loja, consultório ou prestador de serviços — nossa automação adapta-se ao seu modelo de negócio
+    para gerar mais clientes e reduzir o trabalho manual.
+  </p>
+  <div class="grid3">
+    <div class="card"><div class="chip">Clínicas e Estúdios</div><p class="muted" style="margin-top:8px;">Estética, odontologia, terapias, depilação.</p></div>
+    <div class="card"><div class="chip">Comércios e Varejo</div><p class="muted" style="margin-top:8px;">Moda, eletrônicos, acessórios, beleza.</p></div>
+    <div class="card"><div class="chip">Serviços e Consultórios</div><p class="muted" style="margin-top:8px;">Educação, oficinas, advocacia, academias, estúdios.</p></div>
+  </div>
+</section>
 
-    <!-- ====== SEGMENTOS ====== -->
-    <section class="container segments">
-      <h2>Funciona para diversos segmentos</h2>
-      <div class="grid3">
-        <div class="card"><div class="chip">Clínicas e Estúdios</div><p class="muted" style="margin-top:8px;">Estética, odontologia, terapias, depilação.</p></div>
-        <div class="card"><div class="chip">Academias e Fitness</div><p class="muted" style="margin-top:8px;">Pilates, box de cross, personal.</p></div>
-        <div class="card"><div class="chip">Varejo e Serviços</div><p class="muted" style="margin-top:8px;">Moda, barbearias, oficinas, educação.</p></div>
-      </div>
-    </section>
+<!-- ====== MODAL DE LEAD ====== -->
+<div id="leadModal" style="
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
+  backdrop-filter:blur(4px); z-index:9999; justify-content:center; align-items:center;
+">
+  <div style="background:#101622; border:1px solid #26304b; border-radius:16px;
+    padding:28px; width:90%; max-width:420px; position:relative;">
+    <button id="closeLead" style="position:absolute; top:10px; right:14px; background:none; border:none; color:#aaa; font-size:22px; cursor:pointer;">×</button>
+    <h3 style="margin-top:0; color:var(--brand);">Quer saber quanto a IA pode gerar para o seu negócio?</h3>
+    <p style="color:var(--muted); margin-bottom:14px;">Preencha e receba um diagnóstico gratuito pelo WhatsApp:</p>
+    <form id="leadForm">
+      <input name="nome" placeholder="Seu nome" required
+        style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid #2a3a6a; background:#0f162b; color:#fff; margin-bottom:8px;">
+      <input name="whatsapp" placeholder="WhatsApp (com DDD)" required
+        style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid #2a3a6a; background:#0f162b; color:#fff; margin-bottom:8px;">
+      <input name="negocio" placeholder="Tipo de negócio (ex: Clínica, Loja, Academia...)" required
+        style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid #2a3a6a; background:#0f162b; color:#fff; margin-bottom:12px;">
+      <button type="submit" class="btn primary" style="width:100%;">Enviar</button>
+      <p id="leadMsg" style="text-align:center; margin-top:10px; color:var(--muted); font-size:14px;"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ====== SCRIPT DO MODAL ====== -->
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztGUBD5L_eP74Fx8a4MZmnPTJgz27tpZQhql6eIPf3NGX_ESA1URmKfj1ZQ1WhdbAhxA/exec";
+  const modal = document.getElementById('leadModal');
+  const closeBtn = document.getElementById('closeLead');
+  const form = document.getElementById('leadForm');
+  const msg = document.getElementById('leadMsg');
+
+  // Exibe o modal 15 segundos após entrar no site
+  setTimeout(() => {
+    if (!localStorage.getItem('leadDismissed')) {
+      modal.style.display = 'flex';
+    }
+  }, 15000);
+
+  closeBtn.onclick = () => {
+    modal.style.display = 'none';
+    localStorage.setItem('leadDismissed', 'true');
+  };
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    msg.textContent = "Enviando...";
+    const data = {
+      nome: form.nome.value,
+      whatsapp: form.whatsapp.value,
+      negocio: form.negocio.value
+    };
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      msg.textContent = "✅ Enviado com sucesso! Entraremos em contato em breve.";
+      form.reset();
+      setTimeout(() => modal.style.display = 'none', 2000);
+    } catch {
+      msg.textContent = "❌ Erro ao enviar. Tente novamente.";
+    }
+  };
+</script>
 
     <!-- ====== PLANOS ====== -->
     <section id="planos" class="container plans">
