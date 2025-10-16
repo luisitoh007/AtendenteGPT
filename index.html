@@ -108,6 +108,7 @@
       background-size:200% 100%; border-radius:8px; animation:flow 1.2s infinite linear;}
     @keyframes flow{ 0%{background-position:0% 0;} 100%{background-position:200% 0;} }
     .tiny{color:var(--muted); font-size:12px; margin-top:8px; text-align:center;}
+    .bullets-small li { font-size: 14px; padding: 8px 10px 8px 26px; }
   </style>
 </head>
 <body>
@@ -333,7 +334,17 @@
       <h2>Perguntas frequentes</h2>
       <details><summary>Vocês configuram tudo do zero?</summary><p>Sim. Implementamos a IA, preparamos criativos e configuramos campanhas, pixels e eventos para começar a rodar imediatamente.</p></details>
       <details><summary>Em quanto tempo vejo resultado?</summary><p>Normalmente em 7 a 14 dias a automação já está captando leads e agendando atendimentos.</p></details>
-      <details><summary>Existe fidelidade?</summary><p>Não exigimos fidelidade. Nosso objetivo é manter você pelos resultados.</p></details>
+      <details>
+  <summary>Existe fidelidade?</summary>
+  <p>Não exigimos fidelidade — você pode cancelar a qualquer momento, sem multa.</p>
+  <p>Se preferir, oferecemos <strong>descontos progressivos</strong> para períodos maiores:</p>
+  <ul class="bullets bullets-small">
+    <li><strong>Trimestral:</strong> 5% OFF</li>
+    <li><strong>Semestral:</strong> 10% OFF</li>
+    <li><strong>Anual:</strong> 20% OFF</li>
+  </ul>
+  <p class="muted">*Válido para pagamento antecipado do período contratado. Em caso de cancelamento, não há reembolso proporcional do valor já pago.</p>
+</details>
     </section>
   </main>
 
@@ -360,139 +371,194 @@
     });
 
     /* Demo Chat */
-    const personas = {
-    "Clínica": {
-      estilo: "profissional e acolhedor",
-      respostas: [
-        "Excelente! Para clínicas, nossa IA ajuda a captar pacientes todos os dias, respondendo dúvidas sobre tratamentos, horários e promoções.",
-        "Ela também envia lembretes automáticos e reduz as faltas em até 40%.",
-      ]
-    },
-    "Academia": {
-      estilo: "energético e direto",
-      respostas: [
-        "Perfeito! Em academias e studios, a IA converte curiosos em alunos, enviando planos, horários e ofertas no WhatsApp.",
-        "Ela ativa contatos antigos e incentiva renovações automáticas. 💪"
-      ]
-    },
-    "Barbearia": {
-      estilo: "descontraído e confiante",
-      respostas: [
-        "Show de bola! Nas barbearias, a IA agenda clientes automaticamente e confirma o horário — tudo sem precisar parar pra responder mensagens.",
-        "Você foca nos cortes enquanto ela cuida do WhatsApp. ✂️"
-      ]
-    },
-    "Loja de Roupas": {
-      estilo: "comercial e envolvente",
-      respostas: [
-        "Legal! Em lojas, a IA responde clientes 24h, mostra catálogos, envia combos e linka direto com o vendedor.",
-        "Ajuda muito no pós-venda e no WhatsApp Business."
-      ]
-    },
-    "Outro": {
-      estilo: "neutro e adaptável",
-      respostas: [
-        "Interessante! Nossa IA é flexível e pode se adaptar a qualquer tipo de negócio que dependa de clientes e mensagens.",
-        "Basta entendermos o fluxo ideal pra personalizar tudo pra você."
-      ]
-    }
-  };
+/* ==========================
+   IA DEMO TECH AI — v2.0
+   ========================== */
+const WHATSAPP_NUMBER = "5537988416977";
 
-  // ==== FUNÇÕES AUXILIARES ====
-  function appendMsg(role, text) {
-    const div = document.createElement("div");
-    div.className = "msg " + role;
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-    bubble.innerHTML = text;
-    div.appendChild(bubble);
-    document.getElementById("chat-stream").appendChild(div);
-    document.getElementById("chat-stream").scrollTop = 999999;
+// ======== RESPOSTAS PERSONALIZADAS ========
+const personas = {
+  "Clínica": {
+    estilo: "profissional e empático",
+    respostas: [
+      [
+        "Excelente escolha! 🤖 Nossa IA para clínicas responde pacientes automaticamente, envia lembretes e confirma horários.",
+        "Ela reduz faltas em até 40% e libera sua equipe do WhatsApp o dia todo."
+      ],
+      [
+        "Ela também consegue identificar novos pacientes e oferecer pacotes de tratamentos de forma natural.",
+        "Tudo isso enquanto você foca em atender melhor quem está na clínica."
+      ]
+    ]
+  },
+  "Academia": {
+    estilo: "motivador e energético",
+    respostas: [
+      [
+        "Perfeito! 💪 Nossa IA capta alunos todos os dias, envia planos e horários automaticamente.",
+        "Ela até reativa contatos antigos e incentiva renovações com mensagens personalizadas."
+      ],
+      [
+        "Em academias, o retorno costuma ser rápido — mais alunos e menos tempo no celular!",
+        "Você foca nos treinos, ela foca nas conversões."
+      ]
+    ]
+  },
+  "Barbearia": {
+    estilo: "descontraído e confiante",
+    respostas: [
+      [
+        "Show! ✂️ A IA marca horários, confirma agendamentos e responde dúvidas no WhatsApp sem precisar de ninguém online.",
+        "Clientes adoram a praticidade — e você nunca mais perde um corte por falta de resposta."
+      ],
+      [
+        "Dá até pra enviar promoções automáticas e mensagens pós-atendimento.",
+        "É como ter um recepcionista que trabalha 24h por dia."
+      ]
+    ]
+  },
+  "Loja de Roupas": {
+    estilo: "comercial e envolvente",
+    respostas: [
+      [
+        "Legal! 👗 A IA envia fotos de produtos, responde perguntas sobre tamanhos e entrega, e encaminha o cliente direto pro vendedor.",
+        "É perfeita pra gerar engajamento e aumentar o ticket médio no WhatsApp."
+      ],
+      [
+        "Além disso, ela ajuda no pós-venda — com mensagens de acompanhamento e novos lançamentos.",
+        "Tudo de forma natural, sem parecer robô."
+      ]
+    ]
+  },
+  "Outro": {
+    estilo: "neutro e adaptável",
+    respostas: [
+      [
+        "Interessante! 🚀 Nossa IA é flexível e se adapta a qualquer negócio que dependa de atendimento e captação de clientes.",
+        "Basta entendermos seu fluxo e ajustamos o comportamento da IA pra seu modelo."
+      ],
+      [
+        "Ela pode atender, vender, reter ou até coletar dados pra equipe comercial.",
+        "Em resumo: ela faz o trabalho repetitivo pra você focar no que importa."
+      ]
+    ]
   }
+};
 
-  function typing(on = true) {
-    let t = document.getElementById("typing");
-    if (on && !t) {
-      t = document.createElement("div");
-      t.id = "typing";
-      t.className = "msg bot";
-      const b = document.createElement("div");
-      b.className = "bubble";
-      const dots = document.createElement("div");
-      dots.className = "typing";
-      b.appendChild(dots);
-      t.appendChild(b);
-      document.getElementById("chat-stream").appendChild(t);
-    } else if (!on && t) t.remove();
-  }
+// ======== FUNÇÕES AUXILIARES ========
+function appendMsg(role, text) {
+  const div = document.createElement("div");
+  div.className = "msg " + role;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerHTML = text;
+  div.appendChild(bubble);
+  document.getElementById("chat-stream").appendChild(div);
+  document.getElementById("chat-stream").scrollTop = 999999;
+}
 
-  // ==== FLUXO DA CONVERSA ====
-  function nextStep2(segment) {
-    document.getElementById("step-1").remove();
-    appendMsg("you", segment);
-    typing(true);
+function typing(on = true) {
+  let t = document.getElementById("typing");
+  if (on && !t) {
+    t = document.createElement("div");
+    t.id = "typing";
+    t.className = "msg bot";
+    const b = document.createElement("div");
+    b.className = "bubble";
+    const dots = document.createElement("div");
+    dots.className = "typing";
+    b.appendChild(dots);
+    t.appendChild(b);
+    document.getElementById("chat-stream").appendChild(t);
+  } else if (!on && t) t.remove();
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  const voices = speechSynthesis.getVoices();
+  const female = voices.find(v => /female|woman|mulher|brazil|pt-BR/i.test(v.name)) || voices[0];
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.voice = female;
+  utter.rate = 1.05;
+  utter.pitch = 1.1;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+
+// ======== CONVERSA ========
+function nextStep2(segment) {
+  document.getElementById("step-1").remove();
+  appendMsg("you", segment);
+  typing(true);
+
+  setTimeout(() => {
+    typing(false);
+    appendMsg("bot", "Perfeito! Qual é o seu principal objetivo com a automação?");
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    ["Mais agendamentos", "Vender pacotes", "Baixar custo por lead", "Reativar clientes"].forEach(opt => {
+      const p = document.createElement("span");
+      p.className = "pill";
+      p.textContent = opt;
+      p.onclick = () => nextStep3(segment, opt);
+      actions.appendChild(p);
+    });
+    document.getElementById("chat-stream").appendChild(actions);
+  }, 1000);
+}
+
+function nextStep3(segment, objetivo) {
+  appendMsg("you", objetivo);
+  typing(true);
+
+  setTimeout(() => {
+    typing(false);
+    const info = personas[segment] || personas["Outro"];
+    const grupo = info.respostas[Math.floor(Math.random() * info.respostas.length)];
+
+    // Simula digitação em partes
+    appendMsg("bot", grupo[0]);
+    speak(grupo[0]);
 
     setTimeout(() => {
-      typing(false);
-      appendMsg("bot", "Perfeito! Qual é o seu principal objetivo com a automação?");
-      const actions = document.createElement("div");
-      actions.className = "actions";
-      ["Mais agendamentos", "Vender pacotes", "Baixar custo por lead", "Reativar clientes"].forEach(opt => {
-        const p = document.createElement("span");
-        p.className = "pill";
-        p.textContent = opt;
-        p.onclick = () => nextStep3(segment, opt);
-        actions.appendChild(p);
-      });
-      document.getElementById("chat-stream").appendChild(actions);
-    }, 900);
-  }
-
-  function nextStep3(segment, objetivo) {
-    appendMsg("you", objetivo);
-    typing(true);
-
-    setTimeout(() => {
-      typing(false);
-      const info = personas[segment] || personas["Outro"];
-      // IA gera resposta contextual baseada no segmento e objetivo
-      const resposta1 = `${info.respostas[0]} <br><br><em>Nosso foco será: ${objetivo.toLowerCase()} — com tom ${info.estilo}.</em>`;
-      const resposta2 = info.respostas[1];
-
-      appendMsg("bot", resposta1);
-      appendMsg("bot", resposta2);
-
-      // Encaminhar ou explorar planos
+      typing(true);
       setTimeout(() => {
-        appendMsg("bot", "Quer que eu envie uma proposta personalizada via WhatsApp?");
-        const actions = document.createElement("div");
-        actions.className = "actions";
+        typing(false);
+        appendMsg("bot", grupo[1]);
+        speak(grupo[1]);
 
-        const go = document.createElement("span");
-        go.className = "pill";
-        go.textContent = "Sim, quero proposta";
-        go.onclick = () => {
-          const url = `https://wa.me/${WHATSAPP_NUMBER}?text=` +
-            encodeURIComponent(`Olá! Sou do segmento ${segment}. Meu foco é ${objetivo}. Quero uma proposta personalizada da Tech AI.`);
-          window.open(url, "_blank");
-        };
+        setTimeout(() => {
+          appendMsg("bot", "Quer que eu envie uma proposta personalizada via WhatsApp?");
+          const actions = document.createElement("div");
+          actions.className = "actions";
 
-        const later = document.createElement("span");
-        later.className = "pill";
-        later.textContent = "Ver planos primeiro";
-        later.onclick = () => document.getElementById("planos").scrollIntoView({ behavior: "smooth" });
+          const go = document.createElement("span");
+          go.className = "pill";
+          go.textContent = "Sim, quero proposta";
+          go.onclick = () => {
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=` +
+              encodeURIComponent(`Olá! Sou do segmento ${segment}. Meu foco é ${objetivo}. Quero uma proposta personalizada da Tech AI.`);
+            window.open(url, "_blank");
+          };
 
-        actions.appendChild(go);
-        actions.appendChild(later);
-        document.getElementById("chat-stream").appendChild(actions);
-      }, 1000);
-    }, 1000);
-  }
+          const later = document.createElement("span");
+          later.className = "pill";
+          later.textContent = "Ver planos primeiro";
+          later.onclick = () => document.getElementById("planos").scrollIntoView({ behavior: "smooth" });
 
-  // ==== VÍNCULOS DE EVENTO INICIAIS ====
-  document.querySelectorAll("#step-1 .pill").forEach(p => {
-    p.onclick = () => nextStep2(p.dataset.val);
-  });
+          actions.appendChild(go);
+          actions.appendChild(later);
+          document.getElementById("chat-stream").appendChild(actions);
+        }, 1800);
+      }, 1400);
+    }, 1300);
+  }, 900);
+}
+
+// ======== INICIALIZAÇÃO ========
+document.querySelectorAll("#step-1 .pill").forEach(p => {
+  p.onclick = () => nextStep2(p.dataset.val);
+});
 </script>
 </body>
 </html>
