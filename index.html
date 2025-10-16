@@ -222,17 +222,16 @@
 
 <!-- ====== SCRIPT DO MODAL ====== -->
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztGUBD5L_eP74Fx8a4MZmnPTJgz27tpZQhql6eIPf3NGX_ESA1URmKfj1ZQ1WhdbAhxA/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2hRUxTHEZresOqsfrLZXQXYDUQl0Ixvcu57so9GpgrKk52S7IXR2Wah1WACiPndkh/exec"; // cole a URL /exec
+
   const modal = document.getElementById('leadModal');
   const closeBtn = document.getElementById('closeLead');
   const form = document.getElementById('leadForm');
   const msg = document.getElementById('leadMsg');
 
-  // Exibe o modal 15 segundos após entrar no site
+  // Abre depois de 15s (e só uma vez)
   setTimeout(() => {
-    if (!localStorage.getItem('leadDismissed')) {
-      modal.style.display = 'flex';
-    }
+    if (!localStorage.getItem('leadDismissed')) modal.style.display = 'flex';
   }, 15000);
 
   closeBtn.onclick = () => {
@@ -243,21 +242,21 @@
   form.onsubmit = async (e) => {
     e.preventDefault();
     msg.textContent = "Enviando...";
-    const data = {
-      nome: form.nome.value,
-      whatsapp: form.whatsapp.value,
-      negocio: form.negocio.value
-    };
+
+    // >>> sem JSON, sem header manual: evita CORS (sem preflight)
+    const body = new URLSearchParams();
+    body.append('nome', form.nome.value);
+    body.append('whatsapp', form.whatsapp.value);
+    body.append('negocio', form.negocio.value);
+
     try {
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const resp = await fetch(SCRIPT_URL, { method: 'POST', body });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
       msg.textContent = "✅ Enviado com sucesso! Entraremos em contato em breve.";
       form.reset();
-      setTimeout(() => modal.style.display = 'none', 2000);
-    } catch {
+      setTimeout(() => (modal.style.display = 'none'), 1500);
+    } catch (err) {
+      console.error(err);
       msg.textContent = "❌ Erro ao enviar. Tente novamente.";
     }
   };
